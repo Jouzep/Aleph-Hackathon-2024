@@ -18,6 +18,11 @@ export class AlephController {
     return 'Product created';
   }
 
+  @Post('/dico')
+  createDico(@Body() dicoData: createDicoRequest): string {
+    return 'Dico created';
+  }
+
   @Get('/dico')
   getDico(@Body() request: getDicoRequest): product[] {
     if (!request || !request.Name) {
@@ -27,6 +32,11 @@ export class AlephController {
     // getDico(request.Name);
 
     return [];
+  }
+
+  @Post('/group')
+  createGroup(@Body() groupData: createGroupRequest): string {
+    return 'Group created';
   }
 
   @Get('/group')

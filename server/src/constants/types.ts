@@ -12,7 +12,7 @@ export type group = {
   products: product[];
 };
 
-interface image {
+export interface image {
   data: ArrayBuffer | Uint8Array;
   mimeType: string;
 }
