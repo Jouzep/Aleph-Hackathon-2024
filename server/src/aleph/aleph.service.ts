@@ -4,111 +4,116 @@ import { Publish as publishAggregate } from 'aleph-sdk-ts/dist/messages/aggregat
 import { dico, group, presetProducts, product } from '../constants/types';
 import { Get as getAggregate } from 'aleph-sdk-ts/dist/messages/aggregate';
 import { Logger } from '@nestjs/common';
+import { DictionnaryService } from 'src/dictionnary/dictionnary.service';
+import { GroupService } from 'src/group/group.service';
 @Injectable()
 export class AlephService {
   private readonly mainAccount = ImportAccountFromMnemonic(
     'describe ring lumber clever salt like medal panther clown budget actress female',
   );
   private readonly logger = new Logger(AlephService.name);
-  constructor() {
+  constructor(
+    private readonly Dico: DictionnaryService,
+    private readonly Group: GroupService,
+  ) {
     console.log('AlephService constructor');
-    this.testUpdateProductToGroup();
+    // this.testUpdateProductToGroup();
   }
 
-  async testDeleteAllProductFromGroup() {
-    const res = await this.deleteAllProductFromGroup(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'Merde',
-    );
-  }
-  async testAddProductToGroup() {
-    const product: product = {
-      name: 'AirMax',
-      description: 'Nike AirMax 2021',
-      price: 100,
-      size: 44,
-      state: 'En stock',
-      quantity: 10,
-    };
-    const res = await this.addProductToGroup(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'Merde',
-      product,
-    );
-  }
+  // async testDeleteAllProductFromGroup() {
+  //   const res = await this.deleteAllProductFromGroup(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'Merde',
+  //   );
+  // }
+  // async testAddProductToGroup() {
+  //   const product: product = {
+  //     name: 'AirMax',
+  //     description: 'Nike AirMax 2021',
+  //     price: 100,
+  //     size: 44,
+  //     state: 'En stock',
+  //     quantity: 10,
+  //   };
+  //   const res = await this.addProductToGroup(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'Merde',
+  //     product,
+  //   );
+  // }
 
-  async testUpdateProductToGroup() {
-    const product: product = {
-      name: 'AirMaxUpdated',
-      description: 'Nike AirMax 2021',
-      price: 100,
-      size: 44,
-      state: 'En stock',
-      quantity: 10,
-    };
-    const res = await this.updateProductByIndexFromGroup(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'Merde',
-      0,
-      product,
-    );
-  }
-  async testDeleteProductFromGroup() {
-    const res = await this.deleteProductByIndexFromGroup(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'Merde',
-      2,
-    );
-  }
-  async testAddPresetProduct() {
-    const preset: presetProducts = {
-      name: 'AirMax2',
-      size: [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 44, 50, 51, 53],
-      unit: 'eu',
-      price: 100,
-    };
-    const res = await this.addProductToDico(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'sneakers',
-      preset,
-    );
-  }
+  // async testUpdateProductToGroup() {
+  //   const product: product = {
+  //     name: 'AirMaxUpdated',
+  //     description: 'Nike AirMax 2021',
+  //     price: 100,
+  //     size: 44,
+  //     state: 'En stock',
+  //     quantity: 10,
+  //   };
+  //   const res = await this.updateProductByIndexFromGroup(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'Merde',
+  //     0,
+  //     product,
+  //   );
+  // }
+  // async testDeleteProductFromGroup() {
+  //   const res = await this.deleteProductByIndexFromGroup(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'Merde',
+  //     2,
+  //   );
+  // }
+  // async testAddPresetProduct() {
+  //   const preset: presetProducts = {
+  //     name: 'AirMax2',
+  //     size: [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 44, 50, 51, 53],
+  //     unit: 'eu',
+  //     price: 100,
+  //   };
+  //   const res = await this.addProductToDico(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'sneakers',
+  //     preset,
+  //   );
+  // }
 
-  async testDeletePresetProduct() {
-    const res = await this.deleteProductFromDico(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'sneakers',
-      'AirMax',
-    );
-  }
-  async testFetch() {
-    const res = await this.fetchAggregate(
-      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      'group',
-      'Merde',
-    );
-    console.log('res', res);
-    return res;
-  }
-  async testDico() {
-    const newDico: dico = {
-      name: 'sneakers',
-      owner: '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      private: true,
-      presetProducts: [],
-    };
-    const res = await this.createDico(newDico);
-    console.log('res', res);
-  }
-  async testGroup() {
-    const newGroup: group = {
-      name: 'Merde',
-      owner: '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-      authorized: ['0x593d24a4A7d637aaC285D282b78093646592aCF1'],
-      products: [],
-    };
-    const res = await this.createGroup(newGroup);
-  }
+  // async testDeletePresetProduct() {
+  //   const res = await this.deleteProductFromDico(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'sneakers',
+  //     'AirMax',
+  //   );
+  // }
+  // async testFetch() {
+  //   const res = await this.fetchAggregate(
+  //     '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     'group',
+  //     'Merde',
+  //   );
+  //   console.log('res', res);
+  //   return res;
+  // }
+  // async testDico() {
+  //   const newDico: dico = {
+  //     name: 'sneakers',
+  //     owner: '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     private: true,
+  //     presetProducts: [],
+  //   };
+  //   const res = await this.createDico(newDico);
+  //   console.log('res', res);
+  // }
+  // async testGroup() {
+  //   const newGroup: group = {
+  //     name: 'Merde',
+  //     owner: '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  //     authorized: ['0x593d24a4A7d637aaC285D282b78093646592aCF1'],
+  //     products: [],
+  //   };
+  //   const res = await this.createGroup(newGroup);
+  // }
 
   async publishAgregate(address: string, name: string, content: any, type: string) {
     const key = type + '-' + name + '-' + address;
@@ -121,102 +126,6 @@ export class AlephService {
     });
     if (res === undefined) this.logger.error('Error publish Aggregate: ' + name);
     return res;
-  }
-
-  async createDico(newDico: dico) {
-    const res = await this.publishAgregate(newDico.owner, newDico.name, newDico, 'dico');
-    if (res === undefined) this.logger.error('Error create Dico: ' + newDico.name);
-    else this.logger.log('Group created: ' + newDico.name);
-
-    return res;
-  }
-
-  async createGroup(newGroup: group) {
-    const res = await this.publishAgregate(newGroup.owner, newGroup.name, newGroup, 'group');
-    if (res === undefined) this.logger.error('Error create Dico: ' + newGroup.name);
-    else this.logger.log('Group created: ' + newGroup.name);
-    return res;
-  }
-
-  async fetchAggregate(address: string, type: string, name: string) {
-    const key = type + '-' + name + '-' + address;
-    const res = await getAggregate({
-      address: address,
-    });
-    return res[key];
-  }
-
-  async addProductToGroup(address: string, name, product: product) {
-    const res = await this.fetchAggregate(address, 'group', name);
-    res.products.push(product);
-    const updated = await this.publishAgregate(address, name, res, 'group');
-    await sleep(1000);
-    console.log('updated', await this.fetchAggregate(address, 'group', name));
-    this.logger.log('Product added: ' + product.name);
-  }
-
-  async updateProductByIndexFromGroup(
-    address: string,
-    name: string,
-    index: number,
-    product: product,
-  ) {
-    const res = await this.fetchAggregate(address, 'group', name);
-    res.products[index] = product;
-    const updated = await this.publishAgregate(address, name, res, 'group');
-    await sleep(1000);
-    console.log('updated', await this.fetchAggregate(address, 'group', name));
-    this.logger.log('Product updated at index: ' + index);
-  }
-
-  async deleteProductByIndexFromGroup(address: string, name: string, index: number) {
-    const res = await this.fetchAggregate(address, 'group', name);
-    res.products.splice(index, 1);
-    const updated = await this.publishAgregate(address, name, res, 'group');
-    await sleep(1000);
-    console.log('deleted', await this.fetchAggregate(address, 'group', name));
-    this.logger.log('Product deleted at index: ' + index);
-  }
-
-  async deleteAllProductFromGroup(address: string, name: string) {
-    const res = await this.fetchAggregate(address, 'group', name);
-    res.products = [];
-    const updated = await this.publishAgregate(address, name, res, 'group');
-    await sleep(1000);
-    console.log('deleted', await this.fetchAggregate(address, 'group', name));
-    this.logger.log('All products deleted from group: ' + name);
-  }
-  async addProductToDico(address: string, name: string, product: presetProducts) {
-    const res = await this.fetchAggregate(address, 'dico', name);
-    const presetProductIndex = res.presetProducts.findIndex(
-      (singleproduct) => product.name === singleproduct.name,
-    );
-    if (presetProductIndex !== -1) {
-      res.presetProducts[presetProductIndex] = product;
-      await this.publishAgregate(address, name, res, 'dico');
-    } else {
-      res.presetProducts.push(product);
-      await this.publishAgregate(address, name, res, 'dico');
-    }
-    this.logger.error('Product added or updated: ' + product.name);
-    return true;
-  }
-
-  async deleteProductFromDico(address: string, name: string, productName: string) {
-    const res = await this.fetchAggregate(address, 'dico', name);
-    const presetProductIndex = res.presetProducts.findIndex(
-      (singleproduct) => productName === singleproduct.name,
-    );
-    console.log('presetProductIndex', presetProductIndex);
-    if (presetProductIndex !== -1) {
-      res.presetProducts.splice(presetProductIndex, 1);
-      const updated = await this.publishAgregate(address, name, res, 'dico');
-      if (updated === undefined) return false;
-      this.logger.log('Product deleted: ' + productName);
-      return true;
-    }
-    this.logger.error('Product not found: ' + productName);
-    return false;
   }
 }
 
