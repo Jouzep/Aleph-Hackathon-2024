@@ -7,7 +7,7 @@ export type createDicoRequest = {
 }
 
 export type getDicoRequest = {
-  Name: string;
+  name: string;
 }
 
 export type createGroupRequest = {
@@ -17,7 +17,7 @@ export type createGroupRequest = {
 }
 
 export type getGroupRequest = {
-  Name: string;
+  name: string;
 }
 
 export type createProductRequest = {
