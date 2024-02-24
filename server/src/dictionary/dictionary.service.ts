@@ -6,13 +6,13 @@ import { Publish as publishAggregate } from 'aleph-sdk-ts/dist/messages/aggregat
 import { Get as getAggregate } from 'aleph-sdk-ts/dist/messages/aggregate';
 
 @Injectable()
-export class DictionnaryService {
+export class DictionaryService {
   private readonly mainAccount = ImportAccountFromMnemonic(
     'describe ring lumber clever salt like medal panther clown budget actress female',
   );
-  private readonly logger = new Logger(DictionnaryService.name);
+  private readonly logger = new Logger(DictionaryService.name);
 
-  async publishAgregate(address: string, name: string, content: any, type: string) {
+  async publishAggregate(address: string, name: string, content: any, type: string) {
     const key = type + '-' + name + '-' + address;
     const res = await publishAggregate({
       account: this.mainAccount,
@@ -26,7 +26,7 @@ export class DictionnaryService {
   }
 
   async createDico(newDico: dico) {
-    const res = await this.publishAgregate(newDico.owner, newDico.name, newDico, 'dico');
+    const res = await this.publishAggregate(newDico.owner, newDico.name, newDico, 'dico');
     if (res === undefined) this.logger.error('Error create Dico: ' + newDico.name);
     else this.logger.log('Group created: ' + newDico.name);
 
@@ -70,10 +70,10 @@ export class DictionnaryService {
       );
       if (presetProductIndex !== -1) {
         res.presetProducts[presetProductIndex] = product;
-        await this.publishAgregate(address, name, res, 'dico');
+        await this.publishAggregate(address, name, res, 'dico');
       } else {
         res.presetProducts.push(product);
-        await this.publishAgregate(address, name, res, 'dico');
+        await this.publishAggregate(address, name, res, 'dico');
       }
       this.logger.log('Product added or updated: ' + product.name);
       return;
@@ -90,7 +90,7 @@ export class DictionnaryService {
     console.log('presetProductIndex', presetProductIndex);
     if (presetProductIndex !== -1) {
       res.presetProducts.splice(presetProductIndex, 1);
-      const updated = await this.publishAgregate(address, name, res, 'dico');
+      const updated = await this.publishAggregate(address, name, res, 'dico');
       if (updated === undefined) return false;
       this.logger.log('Product deleted: ' + productName);
       return true;

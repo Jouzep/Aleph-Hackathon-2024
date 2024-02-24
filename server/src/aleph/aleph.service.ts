@@ -4,7 +4,7 @@ import { Publish as publishAggregate } from 'aleph-sdk-ts/dist/messages/aggregat
 import { dico, group, presetProducts, product } from '../constants/types';
 import { Get as getAggregate } from 'aleph-sdk-ts/dist/messages/aggregate';
 import { Logger } from '@nestjs/common';
-import { DictionnaryService } from 'src/dictionnary/dictionnary.service';
+import { DictionaryService } from 'src/dictionary/dictionary.service';
 import { GroupService } from 'src/group/group.service';
 import { BaseMessage } from 'aleph-sdk-ts/dist/messages/types';
 import { ethers } from 'ethers';
@@ -15,7 +15,7 @@ export class AlephService {
   );
   private readonly logger = new Logger(AlephService.name);
   constructor(
-    private readonly Dico: DictionnaryService,
+    private readonly Dico: DictionaryService,
     private readonly Group: GroupService,
   ) {
     console.log('AlephService constructor');
@@ -125,7 +125,7 @@ export class AlephService {
   //   const res = await this.createGroup(newGroup);
   // }
 
-  async publishAgregate(address: string, name: string, content: any, type: string) {
+  async publishAggregate(address: string, name: string, content: any, type: string) {
     const key = type + '-' + name + '-' + address;
     const res = await publishAggregate({
       account: this.mainAccount,
