@@ -7,7 +7,7 @@ import {
   ImportAccountFromPrivateKey,
 } from 'aleph-sdk-ts/dist/accounts/ethereum';
 import { PostMessage } from 'aleph-sdk-ts/dist/messages/types';
-
+import { Publish as publishAggregate } from 'aleph-sdk-ts/dist/messages/aggregate';
 import { dico, group, presetProducts } from '../constants/types';
 @Injectable()
 export class AlephService {
@@ -109,5 +109,15 @@ export class AlephService {
     //   newDico,
     // );
     // return res;
+  }
+  async publishAgregate(address: string, ref: string, content: any) {
+    const res = await publishAggregate({
+      account: this.mainAccount,
+      key: ref,
+      content: content,
+      channel: 'TEST2405',
+      address: address,
+    });
+    return res;
   }
 }
