@@ -12,6 +12,11 @@ export type group = {
   products: product[];
 };
 
+interface image {
+  data: ArrayBuffer | Uint8Array;
+  mimeType: string;
+}
+
 export type presetProducts = {
   name: string;
   size: number[];
@@ -22,6 +27,7 @@ export type presetProducts = {
 };
 
 export type product = {
+  image: image;
   name: string;
   price: number;
   size: number;
