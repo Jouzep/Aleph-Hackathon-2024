@@ -1,5 +1,6 @@
 import metamask from "../Assets/metamask.svg.png";
 import { useEffect, useRef } from "react";
+
 const LoginView = ({
   isOpen,
   setIsOpen,
