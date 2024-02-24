@@ -12,9 +12,54 @@ export class AlephService {
   private readonly logger = new Logger(AlephService.name);
   constructor() {
     console.log('AlephService constructor');
-    // this.testDeletePresetProduct();
+    this.testUpdateProductToGroup();
   }
 
+  async testDeleteAllProductFromGroup() {
+    const res = await this.deleteAllProductFromGroup(
+      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+      'Merde',
+    );
+  }
+  async testAddProductToGroup() {
+    const product: product = {
+      name: 'AirMax',
+      description: 'Nike AirMax 2021',
+      price: 100,
+      size: 44,
+      state: 'En stock',
+      quantity: 10,
+    };
+    const res = await this.addProductToGroup(
+      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+      'Merde',
+      product,
+    );
+  }
+
+  async testUpdateProductToGroup() {
+    const product: product = {
+      name: 'AirMaxUpdated',
+      description: 'Nike AirMax 2021',
+      price: 100,
+      size: 44,
+      state: 'En stock',
+      quantity: 10,
+    };
+    const res = await this.updateProductByIndexFromGroup(
+      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+      'Merde',
+      0,
+      product,
+    );
+  }
+  async testDeleteProductFromGroup() {
+    const res = await this.deleteProductByIndexFromGroup(
+      '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+      'Merde',
+      2,
+    );
+  }
   async testAddPresetProduct() {
     const preset: presetProducts = {
       name: 'AirMax2',
@@ -105,8 +150,42 @@ export class AlephService {
     const res = await this.fetchAggregate(address, 'group', name);
     res.products.push(product);
     const updated = await this.publishAgregate(address, name, res, 'group');
+    await sleep(1000);
+    console.log('updated', await this.fetchAggregate(address, 'group', name));
+    this.logger.log('Product added: ' + product.name);
   }
 
+  async updateProductByIndexFromGroup(
+    address: string,
+    name: string,
+    index: number,
+    product: product,
+  ) {
+    const res = await this.fetchAggregate(address, 'group', name);
+    res.products[index] = product;
+    const updated = await this.publishAgregate(address, name, res, 'group');
+    await sleep(1000);
+    console.log('updated', await this.fetchAggregate(address, 'group', name));
+    this.logger.log('Product updated at index: ' + index);
+  }
+
+  async deleteProductByIndexFromGroup(address: string, name: string, index: number) {
+    const res = await this.fetchAggregate(address, 'group', name);
+    res.products.splice(index, 1);
+    const updated = await this.publishAgregate(address, name, res, 'group');
+    await sleep(1000);
+    console.log('deleted', await this.fetchAggregate(address, 'group', name));
+    this.logger.log('Product deleted at index: ' + index);
+  }
+
+  async deleteAllProductFromGroup(address: string, name: string) {
+    const res = await this.fetchAggregate(address, 'group', name);
+    res.products = [];
+    const updated = await this.publishAgregate(address, name, res, 'group');
+    await sleep(1000);
+    console.log('deleted', await this.fetchAggregate(address, 'group', name));
+    this.logger.log('All products deleted from group: ' + name);
+  }
   async addProductToDico(address: string, name: string, product: presetProducts) {
     const res = await this.fetchAggregate(address, 'dico', name);
     const presetProductIndex = res.presetProducts.findIndex(
@@ -139,4 +218,8 @@ export class AlephService {
     this.logger.error('Product not found: ' + productName);
     return false;
   }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

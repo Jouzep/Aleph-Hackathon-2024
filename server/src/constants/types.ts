@@ -25,5 +25,5 @@ export type product = {
   price: number;
   size: number;
   state: string;
-  amount: number;
+  quantity: number;
 };
