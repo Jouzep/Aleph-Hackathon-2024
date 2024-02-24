@@ -1,6 +1,10 @@
 import metamask from "../Assets/metamask.svg.png";
 import { useEffect, useRef } from "react";
-
+import {GetAccountFromProvider} from "aleph-sdk-ts/dist/accounts/ethereum";
+async function ConnectToWallet() {
+  const provider = window.ethereum;
+  const account = await GetAccountFromProvider(provider)
+}
 const LoginView = ({
   isOpen,
   setIsOpen,

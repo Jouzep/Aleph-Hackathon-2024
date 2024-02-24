@@ -34,7 +34,7 @@ const Navbar = () => {
   return (
     <nav
       className={
-        "w-[80%] h-[7vh] bg-navbar fixed rounded-2xl backdrop-blur mix-blend-difference top-5 flex justify-between items-center px-5 z-10"
+        "w-[80%] h-[7vh] bg-navbar fixed rounded-2xl backdrop-blur-xl mix-blend-difference top-5 flex justify-between items-center px-5 z-10"
       }
     >
       <AnchorLink href={`#${SectionId.Home}`} offset="70px">
