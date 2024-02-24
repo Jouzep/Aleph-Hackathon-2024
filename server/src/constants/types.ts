@@ -1,28 +1,29 @@
 export type dico = {
-  dicoName: string;
+  name: string;
   owner: string;
   private: boolean;
-};
-
-export type presetProducts = {
-  productName: string;
-  size: number;
-  unit: string;
-  tags: string[];
-  multiple: boolean;
-  hostDico: string;
-  price: number;
-};
-
-export type product = {
-  productName: string;
-  price: number;
-  size: number;
-  state: string;
+  presetProducts: presetProducts[];
 };
 
 export type group = {
   groupName: string;
   owner: string;
   authorized: string[];
+  products: product[];
+};
+
+export type presetProducts = {
+  name: string;
+  size: number[];
+  unit: string;
+  tags: string[];
+  hostDico: string;
+  price: number;
+};
+
+export type product = {
+  name: string;
+  price: number;
+  size: number;
+  state: string;
 };
