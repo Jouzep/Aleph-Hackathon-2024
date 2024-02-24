@@ -6,7 +6,7 @@ export type dico = {
 };
 
 export type group = {
-  groupName: string;
+  name: string;
   owner: string;
   authorized: string[];
   products: product[];
@@ -16,14 +16,14 @@ export type presetProducts = {
   name: string;
   size: number[];
   unit: string;
-  tags: string[];
-  hostDico: string;
   price: number;
 };
 
 export type product = {
   name: string;
+  description: string;
   price: number;
   size: number;
   state: string;
+  amount: number;
 };
