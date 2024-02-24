@@ -1,15 +1,17 @@
 import { HttpException, HttpStatus, Controller, Get, Post, Body } from '@nestjs/common';
-import { createDicoRequest, getDicoRequest, createGroupRequest, getGroupRequest, createProductRequest } from '../constants/requests';
+import {
+  createDicoRequest,
+  getDicoRequest,
+  createGroupRequest,
+  getGroupRequest,
+  createProductRequest,
+} from '../constants/requests';
 import { product } from '../constants/types';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('DeStock')
 @Controller('aleph')
 export class AlephController {
-
-  @Get('/ping')
-  ping(): string {
-    return 'pong';
-  }
-
   @Post('/product')
   createProduct(@Body() productData: createProductRequest): string {
     if (!productData || !productData.name || !productData.price || !productData.size) {
