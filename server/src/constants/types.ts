@@ -1,3 +1,8 @@
+export interface image {
+  data: ArrayBuffer | Uint8Array;
+  mimeType: string;
+}
+
 export type dico = {
   name: string;
   owner: string;
@@ -12,11 +17,6 @@ export type group = {
   products: product[];
 };
 
-export interface image {
-  data: ArrayBuffer | Uint8Array;
-  mimeType: string;
-}
-
 export type presetProducts = {
   name: string;
   size: number[];
@@ -25,7 +25,6 @@ export type presetProducts = {
 };
 
 export type product = {
-  image: image;
   name: string;
   description: string;
   price: number;
