@@ -97,10 +97,10 @@ export class AlephService {
   // }
   // async testDico() {
   //   const newDico: dico = {
-  //     name: 'sneakers',
-  //     owner: '0x593d24a4A7d637aaC285D282b78093646592aCF1',
-  //     private: true,
-  //     presetProducts: [],
+  // name: 'sneakers',
+  // owner: '0x593d24a4A7d637aaC285D282b78093646592aCF1',
+  // private: true,
+  // presetProducts: [],
   //   };
   //   const res = await this.createDico(newDico);
   //   console.log('res', res);

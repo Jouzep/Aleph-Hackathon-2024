@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ImportAccountFromMnemonic } from 'aleph-sdk-ts/dist/accounts/ethereum';
 import { Logger } from '@nestjs/common';
 import { dico, presetProducts } from 'src/constants/types';
@@ -33,28 +33,53 @@ export class DictionnaryService {
     return res;
   }
 
+  async fetchAllDico(address: string) {
+    try {
+      const res = await getAggregate({
+        address: address,
+      });
+      console.log('res', res);
+      const dicoObjects = Object.fromEntries(
+        Object.entries(res).filter(([key]) => key.startsWith('dico')),
+      );
+      return dicoObjects;
+    } catch (e) {
+      this.logger.error('Error fetch all Dico: ' + e);
+      return {};
+    }
+  }
   async fetchAggregate(address: string, type: string, name: string) {
-    const key = type + '-' + name + '-' + address;
-    const res = await getAggregate({
-      address: address,
-    });
-    return res[key];
+    try {
+      const key = type + '-' + name + '-' + address;
+      const res = await getAggregate({
+        address: address,
+      });
+      return res[key];
+    } catch (e) {
+      this.logger.error('Error fetch Aggregate: ' + e);
+      return {};
+    }
   }
 
   async addProductToDico(address: string, name: string, product: presetProducts) {
-    const res = await this.fetchAggregate(address, 'dico', name);
-    const presetProductIndex = res.presetProducts.findIndex(
-      (singleproduct) => product.name === singleproduct.name,
-    );
-    if (presetProductIndex !== -1) {
-      res.presetProducts[presetProductIndex] = product;
-      await this.publishAgregate(address, name, res, 'dico');
-    } else {
-      res.presetProducts.push(product);
-      await this.publishAgregate(address, name, res, 'dico');
+    try {
+      const res = await this.fetchAggregate(address, 'dico', name);
+      console.log(res.presetProducts.length);
+      const presetProductIndex = res.presetProducts.findIndex(
+        (singleproduct) => product.name === singleproduct?.name,
+      );
+      if (presetProductIndex !== -1) {
+        res.presetProducts[presetProductIndex] = product;
+        await this.publishAgregate(address, name, res, 'dico');
+      } else {
+        res.presetProducts.push(product);
+        await this.publishAgregate(address, name, res, 'dico');
+      }
+      this.logger.log('Product added or updated: ' + product.name);
+      return;
+    } catch (e) {
+      throw new UnprocessableEntityException(e);
     }
-    this.logger.error('Product added or updated: ' + product.name);
-    return true;
   }
 
   async deleteProductFromDico(address: string, name: string, productName: string) {

@@ -9,6 +9,10 @@ async function bootstrap() {
     .setDescription('The DeStock API description')
     .setVersion('1.0')
     .addTag('DeStock')
+    .addTag('Dictionnary')
+    .addTag('Group')
+    .addTag('DeStock')
+    .addTag('DeStock')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

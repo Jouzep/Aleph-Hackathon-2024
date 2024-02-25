@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
+import { GroupController } from './group.controller';
 
-@Module({})
+@Module({
+  controllers: [GroupController]
+})
 export class GroupModule {
   exports: [GroupModule];
 }

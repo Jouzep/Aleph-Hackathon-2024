@@ -22,6 +22,7 @@ export type presetProducts = {
   size: number[];
   unit: string;
   price: number;
+  image?: image;
 };
 
 export type product = {

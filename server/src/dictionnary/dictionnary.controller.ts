@@ -1,0 +1,97 @@
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import {
+  deleteProductFromDicoDTO,
+  createProductIntoDicoDTO,
+  createDicoDTO,
+  AllDictionnaryDTO,
+} from './dto/dictionnary.dto';
+import { DictionnaryService } from './dictionnary.service';
+import { dico, presetProducts } from 'src/constants/types';
+import { ValidationPipe } from '@nestjs/common';
+@Controller('dictionnary')
+@ApiTags('Dictionnary')
+export class DictionnaryController {
+  constructor(private readonly dictionnaryService: DictionnaryService) {}
+  @Get('/')
+  async getAllDictionnary(@Body(new ValidationPipe()) body: AllDictionnaryDTO) {
+    try {
+      console.log('getAllDictionnary', body);
+      const data = await this.dictionnaryService.fetchAllDico(body.address);
+      return data;
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Get('/:dico')
+  async getDictionnary(
+    @Body(new ValidationPipe()) body: AllDictionnaryDTO,
+    @Param('dico') dico: string,
+  ) {
+    try {
+      const data = await this.dictionnaryService.fetchAggregate(body.address, 'dico', dico);
+      return data;
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Post('/')
+  async createDictionnary(@Body(new ValidationPipe()) body: createDicoDTO) {
+    console.log('createDictionnary', body);
+    const dico: dico = {
+      name: body.name,
+      owner: body.owner,
+      private: false,
+      presetProducts: [],
+    };
+    try {
+      const data = await this.dictionnaryService.createDico(dico);
+      return { message: 'Dictionnary successfully created' };
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Post('/:dico/addProduct')
+  async addPresetProductToDictionnary(
+    @Body(new ValidationPipe()) body: createProductIntoDicoDTO,
+    @Param('dico') dico: string,
+  ) {
+    try {
+      console.log('addPresetProductToDictionnary', body);
+      const product: presetProducts = {
+        name: body.name,
+        size: body.size,
+        unit: body.unit,
+        price: body.price,
+        image: body.image,
+      };
+      console.log('product', product);
+      const data = await this.dictionnaryService.addProductToDico(body.address, dico, product);
+      return data;
+    } catch (e) {
+      console.log(e);
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Delete('/:dico/addProduct')
+  async deletePresetProductToDictionnary(
+    @Body(new ValidationPipe()) body: deleteProductFromDicoDTO,
+    @Param('dico') dico: string,
+  ) {
+    try {
+      const data = await this.dictionnaryService.deleteProductFromDico(
+        body.address,
+        dico,
+        body.name,
+      );
+      return data;
+    } catch (e) {
+      console.log(e);
+      throw new BadRequestException(e);
+    }
+  }
+}
