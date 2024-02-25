@@ -25,13 +25,16 @@ interface Product {
   };
 }
 
-interface Groups {
-  [key: string]: {
-    name: string;
-    owner: string;
-    authorized: string[];
-    products: product[];
-  };
+interface Group {
+  name: string;
+  owner: string;
+  products: string[]; // ou tout autre type approprié pour les produits
+  authorized: string[];
+}
+
+interface GroupData {
+  active: Group[];
+  inactive: Group[];
 }
 
 const Inventory = () => {
@@ -42,7 +45,7 @@ const Inventory = () => {
   const DicoRef = useRef("");
   const [dict, setDict] = useState<Product>({}); // Utilisez le bon nom de type ici
   const [dicoInfo, setDicoInfo] = useState("");
-  const [Groups, setGroups] = useState<Groups>({});
+  const [Groups, setGroups] = useState<GroupData>();
 
   const [isOpenD, setIsOpenD] = useState(false);
   const formRefD = useRef<HTMLFormElement>(null);
@@ -84,8 +87,12 @@ const Inventory = () => {
 
   const handleGroup = async () => {
     const response = await getGroupList(localStorage.getItem("address") || "");
-    setGroups(response);
-    console.log(response, Groups);
+    const formattedGroups: GroupData = {
+      active: response.active || [],
+      inactive: response.inactive || [],
+    };
+    setGroups(formattedGroups);
+    console.log(Groups);
   };
 
   const onSubmitDico = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -371,24 +378,24 @@ const Inventory = () => {
             >
               Create a group
             </button>
-            {Object.keys(Groups).map((key) => (
+            {Groups?.inactive.map((group) => (
               <button
-                onClick={() => handleAddDicoInfo(key)}
-                key={key}
+                key={group.name}
                 className={
-                  "h-auto w-full border border-button text-headline rounded-lg flex items-center p-2"
+                  "font-poppins h-full text-white border border-button p-2 rounded-lg"
                 }
               >
-                <p>{Groups[key].name}</p>
-                <p>
-                  {JSON.stringify(dict[key].presetProducts).length > 2 ? (
-                    <FaCheck className={"text-2xl text-button"} />
-                  ) : (
-                    <HiOutlineDotsHorizontal
-                      className={"text-2xl text-button"}
-                    />
-                  )}
-                </p>
+                {group.name}
+              </button>
+            ))}{" "}
+            {Groups?.active.map((group) => (
+              <button
+                key={group.name}
+                className={
+                  "font-poppins h-full text-white border border-button p-2 rounded-lg"
+                }
+              >
+                {group.name}
               </button>
             ))}
           </section>
