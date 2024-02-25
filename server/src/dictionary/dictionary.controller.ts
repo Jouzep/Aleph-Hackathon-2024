@@ -16,14 +16,14 @@ import {
   createDicoDTO,
   AllDictionnaryDTO,
 } from './dto/dictionnary.dto';
-import { DictionnaryService } from './dictionnary.service';
+import { DictionaryService } from './dictionary.service';
 import { dico, presetProducts } from 'src/constants/types';
 import { ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/Auth/Auth.guard';
 @Controller('dictionnary')
 @ApiTags('Dictionnary')
-export class DictionnaryController {
-  constructor(private readonly dictionnaryService: DictionnaryService) {}
+export class DictionaryController {
+  constructor(private readonly dictionnaryService: DictionaryService) {}
   @Get('/')
   async getAllDictionnary(@Query(new ValidationPipe()) body: AllDictionnaryDTO) {
     try {

@@ -5,6 +5,16 @@ import { IoCloseSharp } from "react-icons/io5";
 import "../Style/Input.css";
 import { useSignMessage } from "wagmi";
 import { createDictionary, getDictionary } from "../API/Dictionary";
+import { product } from "../Interface/Product";
+
+interface Product {
+  [key: string]: {
+    name: string;
+    owner: string;
+    private: boolean;
+    presetProducts: product[];
+  };
+}
 
 const Inventory = () => {
   const { data, isError, isSuccess, signMessage } = useSignMessage();
@@ -12,6 +22,7 @@ const Inventory = () => {
   const [isOpenG, setIsOpenG] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const GroupName = useRef("");
+  const [dict, setDict] = useState<Product>({}); // Utilisez le bon nom de type ici
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(formRef.current!);
@@ -35,11 +46,13 @@ const Inventory = () => {
       isPriv: true,
     });
     console.log(response);
+    GroupName.current = "";
+    handleDictionary();
   };
 
   const handleDictionary = async () => {
     const response = await getDictionary(localStorage.getItem("address") || "");
-    console.log(response);
+    setDict(response);
   };
 
   useEffect(() => {
@@ -111,7 +124,9 @@ const Inventory = () => {
               <label className={"font-poppinsMedium text-lg"}>
                 Add an item to your inventory
               </label>
-              <IoCloseSharp className={"text-2xl"} />
+              <button onClick={() => setIsOpen(false)}>
+                <IoCloseSharp className={"text-2xl"} />
+              </button>
             </header>
             <fieldset className={"h-[60%] flex flex-col gap-10"}>
               <ul className={"grid grid-cols-2 gap-5"}>
@@ -173,10 +188,13 @@ const Inventory = () => {
             className={"h-auto w-auto bg-background rounded-lg p-10"}
           >
             <fieldset className={"flex flex-col gap-5"}>
-              <header>
-                <h1 className={"text-white font-poppinsBold text-xl"}>
+              <header className={"flex items-center text-white"}>
+                <h1 className={"font-poppinsBold text-xl"}>
                   Give a name to your group
                 </h1>
+                <button onClick={() => setIsOpenG(false)}>
+                  <IoCloseSharp className={"text-2xl"} />
+                </button>
               </header>
               <span className={"flex gap-3"}>
                 <FormInput name={"Group name"} />
@@ -202,7 +220,7 @@ const Inventory = () => {
           >
             <h1 className={"font-poppinsBold text-3xl"}>Inventory</h1>
             <button
-              onClick={() => setIsOpenG(true)}
+              onClick={() => setIsOpen(true)}
               className={
                 "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg ml-auto mr-10 hover:bg-buttonhover"
               }
@@ -213,7 +231,7 @@ const Inventory = () => {
           </header>
           <section
             className={
-              "w-full h-[6%] bg-background rounded-lg flex items-center"
+              "w-full h-[7%] bg-background rounded-lg flex items-center gap-3"
             }
           >
             <button
@@ -224,6 +242,17 @@ const Inventory = () => {
             >
               Create a group
             </button>
+            {Object.keys(dict).map((key) => (
+              <button
+                key={key}
+                className={
+                  "h-[70%] w-auto border border-button text-headline rounded-lg flex items-center p-2"
+                }
+              >
+                <p>{dict[key].name}</p>
+                <p>:{JSON.stringify(dict[key].presetProducts)}</p>
+              </button>
+            ))}
           </section>
         </div>
       </DefaultViewLoginTemplate>

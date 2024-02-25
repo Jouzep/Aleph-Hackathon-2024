@@ -40,22 +40,14 @@ export const createDictionary = async ({
 };
 
 export const getDictionary = async (address: string) => {
-  const url = `http://localhost:3001/dictionnary`;
-  const requestData = {
-    address: address,
-  };
+  const url = `http://localhost:3001/dictionnary?address=${address}`;
 
   try {
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
     });
-    if (!response.ok) {
+    if (response.ok) {
       const data = await response.json();
-      console.log(data);
       return data;
     }
   } catch (error) {
