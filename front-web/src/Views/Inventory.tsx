@@ -25,10 +25,13 @@ interface Product {
   };
 }
 
-interface Group {
-  name: string;
-  owner: string;
-  authorized: string[];
+interface Groups {
+  [key: string]: {
+    name: string;
+    owner: string;
+    authorized: string[];
+    products: product[];
+  };
 }
 
 const Inventory = () => {
@@ -39,7 +42,7 @@ const Inventory = () => {
   const DicoRef = useRef("");
   const [dict, setDict] = useState<Product>({}); // Utilisez le bon nom de type ici
   const [dicoInfo, setDicoInfo] = useState("");
-  const [Groups, setGroups] = useState<Group[]>([]);
+  const [Groups, setGroups] = useState<Groups>({});
 
   const [isOpenD, setIsOpenD] = useState(false);
   const formRefD = useRef<HTMLFormElement>(null);
@@ -81,7 +84,8 @@ const Inventory = () => {
 
   const handleGroup = async () => {
     const response = await getGroupList(localStorage.getItem("address") || "");
-    console.log(response);
+    setGroups(response);
+    console.log(response, Groups);
   };
 
   const onSubmitDico = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,6 +119,7 @@ const Inventory = () => {
   };
 
   useEffect(() => {
+    handleGroup();
     handleDictionary();
   }, []);
 
@@ -366,14 +371,24 @@ const Inventory = () => {
             >
               Create a group
             </button>
-            {Groups.map((group) => (
+            {Object.keys(Groups).map((key) => (
               <button
-                key={group.name}
+                onClick={() => handleAddDicoInfo(key)}
+                key={key}
                 className={
-                  "font-poppins h-full text-white bg-button p-2 rounded-lg"
+                  "h-auto w-full border border-button text-headline rounded-lg flex items-center p-2"
                 }
               >
-                {group.name}
+                <p>{Groups[key].name}</p>
+                <p>
+                  {JSON.stringify(dict[key].presetProducts).length > 2 ? (
+                    <FaCheck className={"text-2xl text-button"} />
+                  ) : (
+                    <HiOutlineDotsHorizontal
+                      className={"text-2xl text-button"}
+                    />
+                  )}
+                </p>
               </button>
             ))}
           </section>
