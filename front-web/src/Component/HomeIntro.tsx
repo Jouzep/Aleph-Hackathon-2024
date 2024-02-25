@@ -13,8 +13,11 @@ const HomeIntro = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  if (address && !isConnecting && !isDisconnected) {
+  console.log(address, isConnecting, isDisconnected);
+
+  if (address && !isConnecting && isDisconnected) {
     localStorage.setItem("isLogin", "true");
+    localStorage.setItem("address", address);
     navigate("/dashboard");
   }
 

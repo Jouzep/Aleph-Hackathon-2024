@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import "../Style/Input.css";
 import { useSignMessage } from "wagmi";
+import { createDictionary } from "../API/Dictionary";
 
 const Inventory = () => {
   const { data, isError, isSuccess, signMessage } = useSignMessage();
@@ -25,10 +26,16 @@ const Inventory = () => {
       formData.get("image"),
     );
   }
-  function onSubmitG(e: React.FormEvent<HTMLFormElement>) {
+  const onSubmitG = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log(localStorage.getItem("address") + " ");
     e.preventDefault();
-    console.log(GroupName.current);
-  }
+    const response = await createDictionary({
+      name: GroupName.current,
+      address: localStorage.getItem("address") || "",
+      isPriv: true,
+    });
+    console.log(response);
+  };
 
   const FormInput = ({ name }: { name: string }) => {
     if (name === "Group name") {
