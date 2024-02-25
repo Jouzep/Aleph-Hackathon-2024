@@ -7,7 +7,7 @@ import {
   createProductRequest,
 } from '../constants/requests';
 import { product } from '../constants/types';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AlephService } from './aleph.service';
 import { AuthGuard } from 'src/Auth/Auth.guard';
 
@@ -61,6 +61,9 @@ export class AlephController {
   //   throw new HttpException('Group not found', HttpStatus.NO_CONTENT);
   // }
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('Sign') // Include the names of your security schemes
+  @ApiBearerAuth('Address') // Include the names of your security schemes
+  @ApiBearerAuth('Message') // Include the names of your security schemes
   @Get('Test')
   async signTest() {
     await this.aleph.signTest();

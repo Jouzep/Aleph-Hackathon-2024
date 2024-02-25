@@ -5,6 +5,9 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
+    .addApiKey({ type: 'apiKey', name: 'signature', in: 'header' }, 'signature')
+    .addApiKey({ type: 'apiKey', name: 'address', in: 'header' }, 'address')
+    .addApiKey({ type: 'apiKey', name: 'message', in: 'header' }, 'message')
     .setTitle('DeStock')
     .setDescription('The DeStock API description')
     .setVersion('1.0')
