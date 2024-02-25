@@ -1,4 +1,13 @@
-import { HttpException, HttpStatus, Controller, Get, Param, Post, Body, Delete } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { updateGroupRequest, deleteProductRequest } from '../constants/requests';
 import { group } from '../constants/types';
 import { GroupService } from './group.service';
@@ -24,8 +33,8 @@ export class GroupController {
       name: group.name,
       owner: group.owner,
       authorized: group.authorized,
-      products: []
-    }
+      products: [],
+    };
     const res = await this.group.createGroup(newGroup);
     if (res === undefined) {
       throw new HttpException('Error creating group', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -35,18 +44,18 @@ export class GroupController {
   }
 
   @Get('/list')
-  async getGroups(@Body() address: string): Promise<group[]|{}> {
-    const res = await this.group.getGroups(address);
+  async getGroups(@Body() address): Promise<group[] | {}> {
+    const res = await this.group.getGroups(address.address);
     return res as group[];
   }
 
   @Get(':name')
-  async getGroup(@Param('name') groupName: string, @Body() address: string): Promise<group|{}> {
-    if (!address || !groupName) {
+  async getGroup(@Param('name') groupName: string, @Body() Body): Promise<group | {}> {
+    if (!Body.address || !groupName) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
 
-    const res = await this.group.getGroup(address, groupName);
+    const res = await this.group.getGroup(Body.address, groupName);
     if (res === undefined) {
       return {};
     }
@@ -56,11 +65,20 @@ export class GroupController {
 
   @Post('/update')
   async updateGroup(@Body() req: updateGroupRequest): Promise<string> {
-    if (!req.ownerAddress || !req.groupName || !req.product.name || !req.product.description || !req.product.price || !req.product.size || !req.product.state || !req.product.quantity) {
+    if (
+      !req.ownerAddress ||
+      !req.groupName ||
+      !req.product.name ||
+      !req.product.description ||
+      !req.product.price ||
+      !req.product.size ||
+      !req.product.state ||
+      !req.product.quantity
+    ) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
 
-    await this.group.addProductToGroup(req.ownerAddress, req.groupName, req.product)
+    await this.group.addProductToGroup(req.ownerAddress, req.groupName, req.product);
 
     return 'Group updated';
   }
@@ -75,7 +93,10 @@ export class GroupController {
   }
 
   @Delete('/delete/:index')
-  async deleteProductFromGroup(@Body() req: deleteProductRequest, @Param('index') index: string): Promise<string> {
+  async deleteProductFromGroup(
+    @Body() req: deleteProductRequest,
+    @Param('index') index: string,
+  ): Promise<string> {
     if (!req.ownerAddress || !req.groupName || !index) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
