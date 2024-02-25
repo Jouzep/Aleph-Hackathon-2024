@@ -47,16 +47,22 @@ export class GroupService {
 
   async getGroups(address: string) {
     try {
-      console.log(address);
       const res = await getAggregate({
         address: address,
       });
-      console.log('res', res);
       const groupObjects = Object.fromEntries(
         Object.entries(res).filter(([key]) => key.startsWith('group')),
       );
-      return groupObjects;
+      const active = [];
+      const inactive = [];
+
+      Object.values(groupObjects).forEach((product) => {
+        if (product.state === 'Active') active.push(product);
+        else inactive.push(product);
+      });
+      return [active, inactive];
     } catch (e) {
+      console.log('e', e);
       return {};
     }
   }
