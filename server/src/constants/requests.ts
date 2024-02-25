@@ -1,4 +1,4 @@
-import { image } from "./types";
+import { image, product } from "./types";
 
 export type createDicoRequest = {
   name: string;
@@ -18,6 +18,17 @@ export type createGroupRequest = {
 
 export type getGroupRequest = {
   name: string;
+}
+
+export type updateGroupRequest = {
+  ownerAddress: string;
+  groupName: string;
+  product: product;
+}
+
+export type deleteProductRequest = {
+  ownerAddress: string;
+  groupName: string;
 }
 
 export type createProductRequest = {

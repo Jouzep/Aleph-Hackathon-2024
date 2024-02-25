@@ -33,7 +33,7 @@ export class GroupService {
       });
       return res[key];
     } catch (e) {
-      this.logger.error('error', e);
+      this.logger.error(e);
       return {};
     }
   }
@@ -55,13 +55,12 @@ export class GroupService {
       );
       return groupObjects;
     } catch (e) {
-      console.log('error', e);
       return {};
     }
   }
 
-  async getGroup(name: string) {
-    const res = await this.fetchAggregate(this.mainAccount.address, 'group', name);
+  async getGroup(address: string, name: string) {
+    const res = await this.fetchAggregate(address, 'group', name);
     if (res === undefined) this.logger.error('Error fetching group: ' + name);
     else this.logger.log('Group fetched: ' + name);
     return res;
