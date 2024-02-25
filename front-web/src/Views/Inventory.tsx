@@ -1,11 +1,20 @@
 import { DefaultViewLoginTemplate } from "../Component/DefaultViewTemplate";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoMdClose } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import "../Style/Input.css";
 import { useSignMessage } from "wagmi";
-import { createDictionary, getDictionary } from "../API/Dictionary";
+import {
+  addProductToDictionary,
+  createDictionary,
+  deleteDict,
+  getDictionary,
+  getDictionaryProduct,
+} from "../API/Dictionary";
 import { product } from "../Interface/Product";
+import { CreateGroup, getGroupList } from "../API/Group";
+import { FaCheck } from "react-icons/fa";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
 
 interface Product {
   [key: string]: {
@@ -16,38 +25,88 @@ interface Product {
   };
 }
 
+interface Group {
+  name: string;
+  owner: string;
+  authorized: string[];
+}
+
 const Inventory = () => {
   const { data, isError, isSuccess, signMessage } = useSignMessage();
-  const [isOpen, setIsOpen] = useState(false);
   const [isOpenG, setIsOpenG] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [isOpenGroup, setIsOpenGroup] = useState(false);
   const GroupName = useRef("");
+  const DicoRef = useRef("");
   const [dict, setDict] = useState<Product>({}); // Utilisez le bon nom de type ici
+  const [dicoInfo, setDicoInfo] = useState("");
+  const [Groups, setGroups] = useState<Group[]>([]);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    const formData = new FormData(formRef.current!);
+  const [isOpenD, setIsOpenD] = useState(false);
+  const formRefD = useRef<HTMLFormElement>(null);
+
+  const onSubmitD = async (
+    e: React.FormEvent<HTMLFormElement>,
+    dico: string,
+  ) => {
     e.preventDefault();
-    console.log(
-      formData.get("Product name"),
-      formData.get("Description"),
-      formData.get("Price"),
-      formData.get("size"),
-      formData.get("state"),
-      formData.get("quantity"),
-      formData.get("image"),
-    );
-  }
-  const onSubmitG = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(localStorage.getItem("address") + " ");
+    const formData = new FormData(formRefD.current!);
+    const name = (formData.get("Product name") as string) || "";
+    const price = parseInt(formData.get("price") as string) || 0;
+    const size = [(formData.get("size") as string) || ""];
+    const state = (formData.get("state") as string) || "";
+    const img = (formData.get("image") as string) || "";
+    const unit = (formData.get("unit") as string) || "";
+
+    const response = await addProductToDictionary({
+      dico,
+      name,
+      unit,
+      size,
+      price,
+      img,
+    });
+    console.log(response);
+    handleDictionary();
+  };
+
+  const onSubmitGroup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(GroupName.current);
+    const response = await CreateGroup(GroupName.current);
+    console.log(response);
+    GroupName.current = "";
+    setIsOpenGroup(false);
+    handleGroup();
+  };
+
+  const handleGroup = async () => {
+    const response = await getGroupList(localStorage.getItem("address") || "");
+    console.log(response);
+  };
+
+  const onSubmitDico = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await createDictionary({
-      name: GroupName.current,
+      name: DicoRef.current,
       address: localStorage.getItem("address") || "",
       isPriv: true,
     });
     console.log(response);
     GroupName.current = "";
     handleDictionary();
+  };
+
+  const getDicoInfo = async (dico: string) => {
+    const response = await getDictionaryProduct(dico, dico);
+    return response;
+  };
+
+  const handleAddDicoInfo = async (dico: string) => {
+    const name = dico.split("-")[1];
+    setIsOpenD(true);
+    setDicoInfo(name);
+    const response = await getDicoInfo(name);
+    console.log(response);
   };
 
   const handleDictionary = async () => {
@@ -64,8 +123,24 @@ const Inventory = () => {
       return (
         <div className="group">
           <input
-            required
+            name={name}
             onChange={(e) => (GroupName.current = e.target.value)}
+            type="text"
+            className="input text-headline"
+          />
+          <span className="highlight"></span>
+          <span className="bar"></span>
+          <label className={"label"}>{name}</label>
+        </div>
+      );
+    }
+
+    if (name === "Dictionary name") {
+      return (
+        <div className="group">
+          <input
+            name={name}
+            onChange={(e) => (DicoRef.current = e.target.value)}
             type="text"
             className="input text-headline"
           />
@@ -91,6 +166,12 @@ const Inventory = () => {
     );
   };
 
+  const handleDelete = async (dico: string) => {
+    const response = await deleteDict(dico);
+    console.log(response);
+    handleDictionary();
+  };
+
   const handleSigner = async () => {
     const signature = await signMessage({ message: "hello world" });
   };
@@ -103,15 +184,92 @@ const Inventory = () => {
 
   return (
     <>
-      <div className={`${isOpen ? "block w-full h-full absolute" : "hidden"}`}>
+      <div
+        className={`${isOpenGroup ? "block w-full h-full absolute" : "hidden"}`}
+      >
         <div
           className={
             "w-full h-full bg-backgroundRgba absolute flex items-center justify-center"
           }
         >
           <form
-            ref={formRef}
-            onSubmit={onSubmit}
+            ref={formRefD} // Assurez-vous que formRefD est associé ici
+            onSubmit={(e) => onSubmitGroup(e)}
+            className={
+              "p-4 w-1/4 h-[30%] bg-background flex flex-col justify-between rounded-lg"
+            }
+          >
+            <header
+              className={
+                "h-[10%] w-full  flex justify-between text-white items-center"
+              }
+            >
+              <label className={"font-poppinsMedium text-lg"}>
+                Give a name to the group
+              </label>
+              <button onClick={() => setIsOpenG(false)}>
+                <IoCloseSharp className={"text-2xl"} />
+              </button>
+            </header>
+            <FormInput name={"Group name"} />
+            <button
+              type="submit"
+              className={
+                "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
+              }
+            >
+              Save
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className={`${isOpenG ? "block w-full h-full absolute" : "hidden"}`}>
+        <div
+          className={
+            "w-full h-full bg-backgroundRgba absolute flex items-center justify-center"
+          }
+        >
+          <form
+            ref={formRefD} // Assurez-vous que formRefD est associé ici
+            onSubmit={(e) => onSubmitDico(e)}
+            className={
+              "p-4 w-1/4 h-[30%] bg-background flex flex-col justify-between rounded-lg"
+            }
+          >
+            <header
+              className={
+                "h-[10%] w-full  flex justify-between text-white items-center"
+              }
+            >
+              <label className={"font-poppinsMedium text-lg"}>
+                Give a name to the dictionary
+              </label>
+              <button onClick={() => setIsOpenG(false)}>
+                <IoCloseSharp className={"text-2xl"} />
+              </button>
+            </header>
+            <FormInput name={"Dictionary name"} />
+            <button
+              type="submit"
+              className={
+                "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
+              }
+            >
+              Save
+            </button>
+          </form>
+        </div>
+      </div>
+      <div className={`${isOpenD ? "block w-full h-full absolute" : "hidden"}`}>
+        <div
+          className={
+            "w-full h-full bg-backgroundRgba absolute flex items-center justify-center"
+          }
+        >
+          <form
+            ref={formRefD} // Assurez-vous que formRefD est associé ici
+            onSubmit={(e) => onSubmitD(e, dicoInfo)}
             className={
               "p-4 w-1/4 h-[70%] bg-background flex flex-col justify-between rounded-lg"
             }
@@ -122,20 +280,19 @@ const Inventory = () => {
               }
             >
               <label className={"font-poppinsMedium text-lg"}>
-                Add an item to your inventory
+                Save the {dicoInfo} product to your inventory
               </label>
-              <button onClick={() => setIsOpen(false)}>
+              <button onClick={() => setIsOpenD(false)}>
                 <IoCloseSharp className={"text-2xl"} />
               </button>
             </header>
             <fieldset className={"h-[60%] flex flex-col gap-10"}>
               <ul className={"grid grid-cols-2 gap-5"}>
-                <FormInput key={"name"} name={"Product name"} />
-                <FormInput key={"desc"} name={"Description"} />
-                <FormInput key={"price"} name={"Price"} />
-                <FormInput key={"size"} name={"size"} />
-                <FormInput key={"state"} name={"state"} />
-                <FormInput key={"quantity"} name={"quantity"} />
+                <FormInput key={"named"} name={"Product name"} />
+                <FormInput key={"priced"} name={"Price"} />
+                <FormInput key={"sized"} name={"size"} />
+                <FormInput key={"stated"} name={"state"} />
+                <FormInput key={"unitd"} name={"unit"} />
               </ul>
               <label className="custum-file-upload">
                 <div className="icon">
@@ -163,51 +320,27 @@ const Inventory = () => {
                 <div className="text">
                   <span>Click to upload image</span>
                 </div>
-                <input name={"image"} id="file" type="file" />
+                <input name={"imaged"} id="file" type="file" />
               </label>
             </fieldset>
-            <button
-              type="submit"
-              className={
-                "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
-              }
-            >
-              Save
-            </button>
-          </form>
-        </div>
-      </div>
-      <div className={`${isOpenG ? "block w-full h-full absolute" : "hidden"}`}>
-        <div
-          className={
-            "w-full h-full bg-backgroundRgba absolute flex items-center justify-center"
-          }
-        >
-          <form
-            onSubmit={onSubmitG}
-            className={"h-auto w-auto bg-background rounded-lg p-10"}
-          >
-            <fieldset className={"flex flex-col gap-5"}>
-              <header className={"flex items-center text-white"}>
-                <h1 className={"font-poppinsBold text-xl"}>
-                  Give a name to your group
-                </h1>
-                <button onClick={() => setIsOpenG(false)}>
-                  <IoCloseSharp className={"text-2xl"} />
-                </button>
-              </header>
-              <span className={"flex gap-3"}>
-                <FormInput name={"Group name"} />
-                <button
-                  type="submit"
-                  className={
-                    "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
-                  }
-                >
-                  Save
-                </button>
-              </span>
-            </fieldset>
+            <span className={"flex justify-around"}>
+              <button
+                type="submit"
+                className={
+                  "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
+                }
+              >
+                Save
+              </button>
+              <button
+                onClick={() => handleDelete(dicoInfo)}
+                className={
+                  "bg-[red]  text-white font-poppinsBold p-2 rounded-lg"
+                }
+              >
+                Delete
+              </button>
+            </span>
           </form>
         </div>
       </div>
@@ -219,15 +352,6 @@ const Inventory = () => {
             }
           >
             <h1 className={"font-poppinsBold text-3xl"}>Inventory</h1>
-            <button
-              onClick={() => setIsOpen(true)}
-              className={
-                "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg ml-auto mr-10 hover:bg-buttonhover"
-              }
-            >
-              <IoMdAdd />
-              Add item
-            </button>
           </header>
           <section
             className={
@@ -235,25 +359,59 @@ const Inventory = () => {
             }
           >
             <button
-              onClick={() => setIsOpenG(true)}
+              onClick={() => setIsOpenGroup(true)}
               className={
                 "font-poppins h-full text-white bg-button p-2 rounded-lg"
               }
             >
               Create a group
             </button>
-            {Object.keys(dict).map((key) => (
+            {Groups.map((group) => (
               <button
-                key={key}
+                key={group.name}
                 className={
-                  "h-[70%] w-auto border border-button text-headline rounded-lg flex items-center p-2"
+                  "font-poppins h-full text-white bg-button p-2 rounded-lg"
                 }
               >
-                <p>{dict[key].name}</p>
-                <p>:{JSON.stringify(dict[key].presetProducts)}</p>
+                {group.name}
               </button>
             ))}
           </section>
+          <div className={"w-full h-[80%] flex"}>
+            <section className={"w-[80%]"}></section>
+            <aside className={"w-[20%] h-full bg-background p-3"}>
+              <button
+                className={
+                  "flex bg-button text-white font-poppinsBold w-full justify-center items-center text-lg p-2 rounded-lg ml-auto mr-10 hover:bg-buttonhover"
+                }
+                onClick={() => setIsOpenG(true)}
+              >
+                Create a dictionnary
+              </button>
+              <section className={"py-5 flex flex-col gap-3"}>
+                {Object.keys(dict).map((key) => (
+                  <button
+                    onClick={() => handleAddDicoInfo(key)}
+                    key={key}
+                    className={
+                      "h-auto w-full border border-button text-headline rounded-lg flex items-center p-2"
+                    }
+                  >
+                    <p>{dict[key].name}</p>
+                    <p>
+                      {JSON.stringify(dict[key].presetProducts).length > 2 ? (
+                        <FaCheck className={"text-2xl text-button"} />
+                      ) : (
+                        <HiOutlineDotsHorizontal
+                          className={"text-2xl text-button"}
+                        />
+                      )}
+                    </p>
+                  </button>
+                ))}
+              </section>
+            </aside>
+          </div>
         </div>
       </DefaultViewLoginTemplate>
     </>
