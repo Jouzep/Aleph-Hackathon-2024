@@ -12,7 +12,13 @@ import {
   getDictionaryProduct,
 } from "../API/Dictionary";
 import { product } from "../Interface/Product";
-import { CreateGroup, getGroupList } from "../API/Group";
+import {
+  addProductToGroup,
+  changeState,
+  CreateGroup,
+  getGroupList,
+  getGroupProducts,
+} from "../API/Group";
 import { FaCheck } from "react-icons/fa";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 
@@ -23,6 +29,15 @@ interface Product {
     private: boolean;
     presetProducts: product[];
   };
+}
+
+interface GroupProduct {
+  name: string;
+  description: string;
+  price: number;
+  size: number;
+  state: string;
+  quantity: number;
 }
 
 interface Group {
@@ -46,9 +61,15 @@ const Inventory = () => {
   const [dict, setDict] = useState<Product>({}); // Utilisez le bon nom de type ici
   const [dicoInfo, setDicoInfo] = useState("");
   const [Groups, setGroups] = useState<GroupData>();
-
+  const [select, setSelect] = useState<string>("");
   const [isOpenD, setIsOpenD] = useState(false);
   const formRefD = useRef<HTMLFormElement>(null);
+  const formRefAdd = useRef<HTMLFormElement>(null);
+  const formRefGroup = useRef<HTMLFormElement>(null);
+  const formRefDictionary = useRef<HTMLFormElement>(null);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+
+  const [groupProducts, setGroupProducts] = useState<GroupProduct[]>([]);
 
   const onSubmitD = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -92,7 +113,7 @@ const Inventory = () => {
       inactive: response.inactive || [],
     };
     setGroups(formattedGroups);
-    console.log(Groups);
+    console.log(Groups, formattedGroups);
   };
 
   const onSubmitDico = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -127,6 +148,7 @@ const Inventory = () => {
 
   useEffect(() => {
     handleGroup();
+    handleGroupProduct();
     handleDictionary();
   }, []);
 
@@ -188,6 +210,47 @@ const Inventory = () => {
     const signature = await signMessage({ message: "hello world" });
   };
 
+  const handleState = async (groupName: string) => {
+    const response = await changeState(
+      localStorage.getItem("address") || "",
+      groupName,
+    );
+    handleGroup();
+  };
+
+  const onSubmitAdd = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(formRefAdd.current!);
+    const group = (formData.get("Group name") as string) || "";
+    const name = (formData.get("Product name") as string) || "";
+    const price = parseInt(formData.get("Price") as string) || 0;
+    const size = parseInt(formData.get("size") as string) || 0;
+    const quantity = parseInt(formData.get("quantity") as string) || 0;
+
+    const response = await addProductToGroup(
+      group,
+      name,
+      price,
+      size,
+      "Active",
+      quantity,
+    );
+    console.log(response);
+    handleGroupProduct();
+  };
+
+  const foundItem = Groups?.active.find((group) => group.name === select);
+
+  const handleGroupProduct = async () => {
+    const response = await getGroupProducts(select);
+    if (Array.isArray(response)) {
+      // Assurez-vous que response est un tableau
+      setGroupProducts(response);
+    } else {
+      console.error("Expected an array but received:", response);
+    }
+  };
+
   useEffect(() => {
     if (isSuccess) {
       console.log(data);
@@ -196,6 +259,53 @@ const Inventory = () => {
 
   return (
     <>
+      <div
+        className={`${isAddOpen ? "block w-full h-full absolute" : "hidden"}`}
+      >
+        <div
+          className={
+            "w-full h-full bg-backgroundRgba absolute flex items-center justify-center"
+          }
+        >
+          <form
+            ref={formRefAdd} // Assurez-vous que formRefD est associé ici
+            onSubmit={(e) => onSubmitAdd(e)}
+            className={
+              "p-4 w-1/4 h-[40%] bg-background flex flex-col gap-10 rounded-lg"
+            }
+          >
+            <header
+              className={
+                "h-[10%] w-full  flex justify-between text-white items-center"
+              }
+            >
+              <label className={"font-poppinsMedium text-lg"}>
+                Add a product to the inventory
+              </label>
+              <button onClick={() => setIsAddOpen(false)}>
+                <IoCloseSharp className={"text-2xl"} />
+              </button>
+            </header>
+            <fieldset className={"h-[60%] flex flex-col gap-10"}>
+              <ul className={"grid grid-cols-2 gap-5"}>
+                <FormInput name={"Group name"} />
+                <FormInput name={"Product name"} />
+                <FormInput name={"Price"} />
+                <FormInput name={"size"} />
+                <FormInput name={"quantity"} />
+              </ul>
+              <button
+                type="submit"
+                className={
+                  "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
+                }
+              >
+                Add
+              </button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
       <div
         className={`${isOpenGroup ? "block w-full h-full absolute" : "hidden"}`}
       >
@@ -378,29 +488,53 @@ const Inventory = () => {
             >
               Create a group
             </button>
-            {Groups?.inactive.map((group) => (
+            {Groups?.inactive?.map((group) => (
               <button
+                onClick={() => {
+                  setSelect(group.name);
+                  handleState(group.name);
+                }}
                 key={group.name}
-                className={
-                  "font-poppins h-full text-white border border-button p-2 rounded-lg"
-                }
+                className={`font-poppins h-full text-white border 
+      ${select === group.name ? "bg-green-400" : "border-button"}
+      p-2 rounded-lg`}
               >
                 {group.name}
               </button>
-            ))}{" "}
-            {Groups?.active.map((group) => (
+            ))}
+
+            {Groups?.active?.map((group) => (
               <button
+                onClick={() => handleState(group.name)}
                 key={group.name}
-                className={
-                  "font-poppins h-full text-white border border-button p-2 rounded-lg"
-                }
+                className={`font-poppins h-full text-white 
+      p-2 rounded-lg 
+      ${select === group.name ? "bg-green-400" : "bg-button"}`}
               >
                 {group.name}
               </button>
             ))}
           </section>
           <div className={"w-full h-[80%] flex"}>
-            <section className={"w-[80%]"}></section>
+            <section className={"w-[80%] flex flex-col"}>
+              <header className={"h-auto w-full"}>
+                <button
+                  onClick={() => setIsAddOpen(true)}
+                  className={
+                    "font-poppinsBold text-xl p-3 text-white bg-button"
+                  }
+                >
+                  Add product
+                </button>
+              </header>
+              <p
+                className={
+                  "h-[200px] w-[200px] rounded-lg mt-5 flex items-center justify-center bg-button"
+                }
+              >
+                {foundItem ? foundItem.name : ""}
+              </p>
+            </section>
             <aside className={"w-[20%] h-full bg-background p-3"}>
               <button
                 className={
