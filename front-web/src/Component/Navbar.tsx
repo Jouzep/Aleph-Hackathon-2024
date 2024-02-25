@@ -45,18 +45,14 @@ const Navbar = () => {
         <AnchorLink href={`#${SectionId.Home}`} offset="70px">
           <FaSpaceAwesome className={"rotate-45 text-3xl"} />
         </AnchorLink>
-        {localStorage.getItem("isLogin") === "true" ? (
-          <button
-            onClick={() => navigate("/dashboard")}
-            className={
-              "bg-button text-xl font-poppinsBold p-3 text-headline rounded-lg"
-            }
-          >
-            Dashboard
-          </button>
-        ) : (
-          <w3m-button />
-        )}
+        <button
+          onClick={() => navigate("/dashboard")}
+          className={
+            "bg-button text-xl font-poppinsBold p-3 text-headline rounded-lg"
+          }
+        >
+          Dashboard
+        </button>
       </span>
       <section className={"flex gap-10"}>{mappedItems}</section>
     </nav>

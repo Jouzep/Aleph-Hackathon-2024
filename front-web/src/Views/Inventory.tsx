@@ -108,12 +108,16 @@ const Inventory = () => {
 
   const handleGroup = async () => {
     const response = await getGroupList(localStorage.getItem("address") || "");
-    const formattedGroups: GroupData = {
-      active: response.active || [],
-      inactive: response.inactive || [],
-    };
-    setGroups(formattedGroups);
-    console.log(Groups, formattedGroups);
+    if (response) {
+      const formattedGroups: GroupData = {
+        active: response.active ?? [],
+        inactive: response.inactive ?? [],
+      };
+      setGroups(formattedGroups);
+      console.log(formattedGroups);
+    } else {
+      console.error("Response is undefined");
+    }
   };
 
   const onSubmitDico = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -204,10 +208,6 @@ const Inventory = () => {
     const response = await deleteDict(dico);
     console.log(response);
     handleDictionary();
-  };
-
-  const handleSigner = async () => {
-    const signature = await signMessage({ message: "hello world" });
   };
 
   const handleState = async (groupName: string) => {
@@ -488,32 +488,36 @@ const Inventory = () => {
             >
               Create a group
             </button>
-            {Groups?.inactive?.map((group) => (
-              <button
-                onClick={() => {
-                  setSelect(group.name);
-                  handleState(group.name);
-                }}
-                key={group.name}
-                className={`font-poppins h-full text-white border 
-      ${select === group.name ? "bg-green-400" : "border-button"}
-      p-2 rounded-lg`}
-              >
-                {group.name}
-              </button>
-            ))}
+            {Groups ? (
+              <>
+                {Groups?.inactive?.map((group) => (
+                  <button
+                    onClick={() => {
+                      setSelect(group.name);
+                      handleState(group.name);
+                    }}
+                    key={group.name}
+                    className={`font-poppins h-full text-white border 
+          ${select === group.name ? "bg-green-400" : "border-button"}
+          p-2 rounded-lg`}
+                  >
+                    {group.name}
+                  </button>
+                ))}
 
-            {Groups?.active?.map((group) => (
-              <button
-                onClick={() => handleState(group.name)}
-                key={group.name}
-                className={`font-poppins h-full text-white 
-      p-2 rounded-lg 
-      ${select === group.name ? "bg-green-400" : "bg-button"}`}
-              >
-                {group.name}
-              </button>
-            ))}
+                {Groups?.active?.map((group) => (
+                  <button
+                    onClick={() => handleState(group.name)}
+                    key={group.name}
+                    className={`font-poppins h-full text-white 
+          p-2 rounded-lg 
+          ${select === group.name ? "bg-green-400" : "bg-button"}`}
+                  >
+                    {group.name}
+                  </button>
+                ))}
+              </>
+            ) : null}
           </section>
           <div className={"w-full h-[80%] flex"}>
             <section className={"w-[80%] flex flex-col"}>
@@ -545,26 +549,29 @@ const Inventory = () => {
                 Create a dictionnary
               </button>
               <section className={"py-5 flex flex-col gap-3"}>
-                {Object.keys(dict).map((key) => (
-                  <button
-                    onClick={() => handleAddDicoInfo(key)}
-                    key={key}
-                    className={
-                      "h-auto w-full border border-button text-headline rounded-lg flex items-center p-2"
-                    }
-                  >
-                    <p>{dict[key].name}</p>
-                    <p>
-                      {JSON.stringify(dict[key].presetProducts).length > 2 ? (
-                        <FaCheck className={"text-2xl text-button"} />
-                      ) : (
-                        <HiOutlineDotsHorizontal
-                          className={"text-2xl text-button"}
-                        />
-                      )}
-                    </p>
-                  </button>
-                ))}
+                {dict
+                  ? Object.keys(dict).map((key) => (
+                      <button
+                        onClick={() => handleAddDicoInfo(key)}
+                        key={key}
+                        className={
+                          "h-auto w-full border border-button text-headline rounded-lg flex items-center p-2"
+                        }
+                      >
+                        <p>{dict[key].name}</p>
+                        <p>
+                          {JSON.stringify(dict[key].presetProducts).length >
+                          2 ? (
+                            <FaCheck className={"text-2xl text-button"} />
+                          ) : (
+                            <HiOutlineDotsHorizontal
+                              className={"text-2xl text-button"}
+                            />
+                          )}
+                        </p>
+                      </button>
+                    ))
+                  : null}
               </section>
             </aside>
           </div>
