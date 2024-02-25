@@ -1,4 +1,13 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   deleteProductFromDicoDTO,
@@ -9,6 +18,7 @@ import {
 import { DictionnaryService } from './dictionnary.service';
 import { dico, presetProducts } from 'src/constants/types';
 import { ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from 'src/Auth/Auth.guard';
 @Controller('dictionnary')
 @ApiTags('Dictionnary')
 export class DictionnaryController {
@@ -38,6 +48,7 @@ export class DictionnaryController {
   }
 
   @Post('/')
+  @UseGuards(AuthGuard)
   async createDictionnary(@Body(new ValidationPipe()) body: createDicoDTO) {
     console.log('createDictionnary', body);
     const dico: dico = {
@@ -55,6 +66,7 @@ export class DictionnaryController {
   }
 
   @Post('/:dico/addProduct')
+  @UseGuards(AuthGuard)
   async addPresetProductToDictionnary(
     @Body(new ValidationPipe()) body: createProductIntoDicoDTO,
     @Param('dico') dico: string,
@@ -78,6 +90,7 @@ export class DictionnaryController {
   }
 
   @Delete('/:dico/addProduct')
+  @UseGuards(AuthGuard)
   async deletePresetProductToDictionnary(
     @Body(new ValidationPipe()) body: deleteProductFromDicoDTO,
     @Param('dico') dico: string,

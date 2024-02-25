@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Controller, Get, Post, Body } from '@nestjs/common';
+import { HttpException, HttpStatus, Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import {
   createDicoRequest,
   getDicoRequest,
@@ -9,7 +9,7 @@ import {
 import { product } from '../constants/types';
 import { ApiTags } from '@nestjs/swagger';
 import { AlephService } from './aleph.service';
-import { ethers } from 'ethers';
+import { AuthGuard } from 'src/Auth/Auth.guard';
 
 @ApiTags('DeStock')
 @Controller('aleph')
@@ -60,7 +60,7 @@ export class AlephController {
   //   // getGroup(request.Name);
   //   throw new HttpException('Group not found', HttpStatus.NO_CONTENT);
   // }
-
+  @UseGuards(AuthGuard)
   @Get('Test')
   async signTest() {
     await this.aleph.signTest();

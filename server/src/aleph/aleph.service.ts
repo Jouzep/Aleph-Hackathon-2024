@@ -25,7 +25,7 @@ export class AlephService {
 
   async signTest() {
     const signerAddress = ethers.utils.verifyMessage(
-      'hello world',
+      'hello worlds',
       '0xb13e88f5ff7669cc229228b6db166fc9d7eacc94f1a04862f9fbfb503c6f7ee77946938aed4c9f563bbe4698fc7f26cff51373a79a804f004e44838eb88a63181b',
     );
     console.log('signerAddress', signerAddress);
