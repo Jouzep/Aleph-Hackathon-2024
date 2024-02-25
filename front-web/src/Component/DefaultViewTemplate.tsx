@@ -23,4 +23,12 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+export const DefaultViewLoginTemplate = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  return <div className={"h-screen w-full bg-[#36333C] p-10"}>{children}</div>;
+};
+
 export default DefaultViewTemplate;

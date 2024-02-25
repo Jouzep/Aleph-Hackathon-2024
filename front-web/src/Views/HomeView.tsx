@@ -5,9 +5,11 @@ import { SectionId } from "../Interface/SectionId";
 import HomeIntro from "../Component/HomeIntro";
 import AboutView from "../Component/About";
 import PricingView from "../Component/Pricing";
-import LoginView from "./LoginView";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const HomeView = () => {
+  const navigate = useNavigate();
   return (
     <MainLayout>
       <DefaultViewTemplate sectionId={SectionId.Home}>

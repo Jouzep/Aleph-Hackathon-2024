@@ -1,17 +1,28 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeView from "./Views/HomeView";
-import LoginView from "./Views/LoginView";
+import { Context } from "wagmi";
+import { ContextProvider } from "./context/Context";
+import Dashboard from "./Views/Dashboard";
+import SIdebar from "./Component/SIdebar";
+import Inventory from "./Views/Inventory";
+import Public from "./Views/Public";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomeView />} />
-      </Routes>
-    </BrowserRouter>
+    <ContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomeView />} />
+          <Route element={<SIdebar />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/public" element={<Public />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ContextProvider>
   );
 }
 

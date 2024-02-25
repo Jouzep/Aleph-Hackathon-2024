@@ -6,9 +6,18 @@ import ticket from "../Assets/homeviewassets/taylorswift.png";
 import { useNavigate } from "react-router-dom";
 import LoginView from "../Views/LoginView";
 import { useState } from "react";
+import ConnectButton from "../context/Context";
+import { useAccount } from "wagmi";
 const HomeIntro = () => {
+  const { address, isConnecting, isDisconnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
+  if (address && !isConnecting && !isDisconnected) {
+    localStorage.setItem("isLogin", "true");
+    navigate("/dashboard");
+  }
+
   return (
     <div
       className={
@@ -51,7 +60,7 @@ const HomeIntro = () => {
           <FaSpaceAwesome className={"rotate-45"} />
           DeStock
         </h1>
-        <span>
+        <span className={"flex w-auto flex-col"}>
           <h1 className={"text-headline text-5xl font-poppinsBold"}>
             De
             <ReactTyped
@@ -61,20 +70,11 @@ const HomeIntro = () => {
               backSpeed={50}
             />
           </h1>
-          <h2 className={"text-xl font-poppinsSemiBold text-text"}>
+          <h2 className={"text-xl font-poppinsBold text-text"}>
             We take care of your stock no matter who you are
           </h2>
         </span>
-        <button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className={
-            "bg-button text-lg font-poppinsSemiBold text-headline p-4 rounded-lg hover:bg-buttonhover"
-          }
-        >
-          Get started
-        </button>
+        <ConnectButton />
       </main>
     </div>
   );

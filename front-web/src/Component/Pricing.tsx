@@ -66,10 +66,6 @@ const PricingCard = ({
   services: string[];
   index: number;
 }) => {
-  const colorList = ["#7f5af0", "#EF45C7", "#CD7F32"];
-  const color = colorList[index];
-
-  console.log(color);
   return (
     <section
       className={`w-[30%] h-auto border hover:border-buttonhover border-button p-4 flex flex-col gap-5`}
