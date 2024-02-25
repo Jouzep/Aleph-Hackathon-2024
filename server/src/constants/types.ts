@@ -15,6 +15,7 @@ export type group = {
   owner: string;
   authorized: string[];
   products: product[];
+  state?: string;
 };
 
 export type presetProducts = {

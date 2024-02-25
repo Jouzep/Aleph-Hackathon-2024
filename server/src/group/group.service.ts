@@ -38,6 +38,7 @@ export class GroupService {
     }
   }
   async createGroup(newGroup: group) {
+    newGroup.state = 'Active';
     const res = await this.publishAggregate(newGroup.owner, newGroup.name, newGroup, 'group');
     if (res === undefined) this.logger.error('Error create Dico: ' + newGroup.name);
     else this.logger.log('Group created: ' + newGroup.name);
@@ -106,6 +107,15 @@ export class GroupService {
     await sleep(1000);
     console.log('deleted', await this.fetchAggregate(address, 'group', name));
     this.logger.log('All products deleted from group: ' + name);
+  }
+
+  async changeGroupState(groupName: string, address: string) {
+    const res = await this.fetchAggregate(address, 'group', groupName);
+    if (res.state === 'Active') res.state = 'Inactive';
+    else res.state = 'Active';
+    const updated = await this.publishAggregate(address, groupName, res, 'group');
+    await sleep(1000);
+    return updated;
   }
 }
 

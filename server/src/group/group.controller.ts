@@ -7,6 +7,7 @@ import {
   Post,
   Body,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { updateGroupRequest, deleteProductRequest } from '../constants/requests';
 import { group } from '../constants/types';
@@ -105,5 +106,10 @@ export class GroupController {
     }
 
     return 'Product deleted from group: ' + req.groupName;
+  }
+
+  @Patch(':address/:name/state')
+  async changeState(@Param('address') address: string, @Param('name') name: string) {
+    return await this.group.changeGroupState(name, address);
   }
 }
