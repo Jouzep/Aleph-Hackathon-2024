@@ -43,19 +43,19 @@ export class GroupController {
     return newGroup;
   }
 
-  @Get('/list')
-  async getGroups(@Body() address): Promise<group[] | {}> {
-    const res = await this.group.getGroups(address.address);
+  @Get(':address/list')
+  async getGroups(@Param() address: string): Promise<group[] | {}> {
+    const res = await this.group.getGroups(address);
     return res as group[];
   }
 
-  @Get(':name')
-  async getGroup(@Param('name') groupName: string, @Body() Body): Promise<group | {}> {
-    if (!Body.address || !groupName) {
+  @Get(':address/:name')
+  async getGroup(@Param('address') address: string, @Param('name') groupName: string): Promise<group | {}> {
+    if (!address || !groupName) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
 
-    const res = await this.group.getGroup(Body.address, groupName);
+    const res = await this.group.getGroup(address, groupName);
     if (res === undefined) {
       return {};
     }
