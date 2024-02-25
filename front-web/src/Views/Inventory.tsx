@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import "../Style/Input.css";
 import { useSignMessage } from "wagmi";
-import { createDictionary } from "../API/Dictionary";
+import { createDictionary, getDictionary } from "../API/Dictionary";
 
 const Inventory = () => {
   const { data, isError, isSuccess, signMessage } = useSignMessage();
@@ -36,6 +36,15 @@ const Inventory = () => {
     });
     console.log(response);
   };
+
+  const handleDictionary = async () => {
+    const response = await getDictionary(localStorage.getItem("address") || "");
+    console.log(response);
+  };
+
+  useEffect(() => {
+    handleDictionary();
+  }, []);
 
   const FormInput = ({ name }: { name: string }) => {
     if (name === "Group name") {
