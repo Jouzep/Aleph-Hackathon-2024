@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -24,7 +25,7 @@ import { AuthGuard } from 'src/Auth/Auth.guard';
 export class DictionnaryController {
   constructor(private readonly dictionnaryService: DictionnaryService) {}
   @Get('/')
-  async getAllDictionnary(@Body(new ValidationPipe()) body: AllDictionnaryDTO) {
+  async getAllDictionnary(@Query(new ValidationPipe()) body: AllDictionnaryDTO) {
     try {
       console.log('getAllDictionnary', body);
       const data = await this.dictionnaryService.fetchAllDico(body.address);
@@ -36,7 +37,7 @@ export class DictionnaryController {
 
   @Get('/:dico')
   async getDictionnary(
-    @Body(new ValidationPipe()) body: AllDictionnaryDTO,
+    @Query(new ValidationPipe()) body: AllDictionnaryDTO,
     @Param('dico') dico: string,
   ) {
     try {
