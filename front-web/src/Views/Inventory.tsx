@@ -8,7 +8,9 @@ import { useSignMessage } from "wagmi";
 const Inventory = () => {
   const { data, isError, isSuccess, signMessage } = useSignMessage();
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenG, setIsOpenG] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const GroupName = useRef("");
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formData = new FormData(formRef.current!);
@@ -23,8 +25,28 @@ const Inventory = () => {
       formData.get("image"),
     );
   }
+  function onSubmitG(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    console.log(GroupName.current);
+  }
 
   const FormInput = ({ name }: { name: string }) => {
+    if (name === "Group name") {
+      return (
+        <div className="group">
+          <input
+            required
+            onChange={(e) => (GroupName.current = e.target.value)}
+            type="text"
+            className="input text-headline"
+          />
+          <span className="highlight"></span>
+          <span className="bar"></span>
+          <label className={"label"}>{name}</label>
+        </div>
+      );
+    }
+
     return (
       <div className="group">
         <input
@@ -124,23 +146,70 @@ const Inventory = () => {
           </form>
         </div>
       </div>
-      <DefaultViewLoginTemplate>
-        <header
+      <div className={`${isOpenG ? "block w-full h-full absolute" : "hidden"}`}>
+        <div
           className={
-            "h-[10%] w-full bg-background rounded-lg text-headline flex items-center p-10"
+            "w-full h-full bg-backgroundRgba absolute flex items-center justify-center"
           }
         >
-          <h1 className={"font-poppinsBold text-3xl"}>Inventory</h1>
-          <button
-            onClick={() => setIsOpen(true)}
+          <form
+            onSubmit={onSubmitG}
+            className={"h-auto w-auto bg-background rounded-lg p-10"}
+          >
+            <fieldset className={"flex flex-col gap-5"}>
+              <header>
+                <h1 className={"text-white font-poppinsBold text-xl"}>
+                  Give a name to your group
+                </h1>
+              </header>
+              <span className={"flex gap-3"}>
+                <FormInput name={"Group name"} />
+                <button
+                  type="submit"
+                  className={
+                    "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg w-fit hover:bg-buttonhover"
+                  }
+                >
+                  Save
+                </button>
+              </span>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+      <DefaultViewLoginTemplate>
+        <div className={"w-full h-full flex gap-5 flex-col"}>
+          <header
             className={
-              "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg ml-auto mr-10 hover:bg-buttonhover"
+              "h-[10%] w-full bg-background rounded-lg text-headline flex items-center p-10"
             }
           >
-            <IoMdAdd />
-            Add item
-          </button>
-        </header>
+            <h1 className={"font-poppinsBold text-3xl"}>Inventory</h1>
+            <button
+              onClick={() => setIsOpenG(true)}
+              className={
+                "flex bg-button text-white font-poppinsBold items-center text-lg p-2 rounded-lg ml-auto mr-10 hover:bg-buttonhover"
+              }
+            >
+              <IoMdAdd />
+              Add item
+            </button>
+          </header>
+          <section
+            className={
+              "w-full h-[6%] bg-background rounded-lg flex items-center"
+            }
+          >
+            <button
+              onClick={() => setIsOpenG(true)}
+              className={
+                "font-poppins h-full text-white bg-button p-2 rounded-lg"
+              }
+            >
+              Create a group
+            </button>
+          </section>
+        </div>
       </DefaultViewLoginTemplate>
     </>
   );
