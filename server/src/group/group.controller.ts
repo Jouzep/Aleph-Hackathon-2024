@@ -8,10 +8,12 @@ import {
   Body,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { updateGroupRequest, deleteProductRequest } from '../constants/requests';
 import { group } from '../constants/types';
 import { GroupService } from './group.service';
+import { AuthGuard } from 'src/Auth/Auth.guard';
 
 @Controller('group')
 export class GroupController {
@@ -22,6 +24,7 @@ export class GroupController {
     return 'pong';
   }
 
+  @UseGuards(AuthGuard)
   @Post('/create')
   async createGroup(@Body() group: group): Promise<group> {
     if (!group.name || !group.owner || !group.authorized) {
@@ -67,6 +70,7 @@ export class GroupController {
   }
 
   @Post('/update')
+  @UseGuards(AuthGuard)
   async updateGroup(@Body() req: updateGroupRequest): Promise<string> {
     if (
       !req.ownerAddress ||
@@ -87,6 +91,7 @@ export class GroupController {
   }
 
   @Delete('/delete')
+  @UseGuards(AuthGuard)
   async deleteAllProductsFromGroup(@Body() req: deleteProductRequest): Promise<string> {
     if (!req.ownerAddress || !req.groupName) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
@@ -96,6 +101,7 @@ export class GroupController {
   }
 
   @Delete('/delete/:index')
+  @UseGuards(AuthGuard)
   async deleteProductFromGroup(
     @Body() req: deleteProductRequest,
     @Param('index') index: string,
@@ -108,6 +114,7 @@ export class GroupController {
   }
 
   @Patch(':address/:name/state')
+  @UseGuards(AuthGuard)
   async changeState(@Param('address') address: string, @Param('name') name: string) {
     return await this.group.changeGroupState(name, address);
   }
