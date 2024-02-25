@@ -1,5 +1,5 @@
 export interface image {
-  data: ArrayBuffer | Uint8Array;
+  data: Uint8Array;
   mimeType: string;
 }
 
