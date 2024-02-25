@@ -26,11 +26,16 @@ export class GroupService {
   }
 
   async fetchAggregate(address: string, type: string, name: string) {
-    const key = type + '-' + name + '-' + address;
-    const res = await getAggregate({
-      address: address,
-    });
-    return res[key];
+    try {
+      const key = type + '-' + name + '-' + address;
+      const res = await getAggregate({
+        address: address,
+      });
+      return res[key];
+    } catch (e) {
+      this.logger.error('error', e);
+      return {};
+    }
   }
   async createGroup(newGroup: group) {
     const res = await this.publishAggregate(newGroup.owner, newGroup.name, newGroup, 'group');
@@ -40,14 +45,19 @@ export class GroupService {
   }
 
   async getGroups(address: string) {
-    const res = await getAggregate({
-      address: address,
-    });
-    console.log('res', res);
-    const groupObjects = Object.fromEntries(
-      Object.entries(res).filter(([key]) => key.startsWith('group'))
-    );
-    return groupObjects;
+    try {
+      const res = await getAggregate({
+        address: address,
+      });
+      console.log('res', res);
+     const groupObjects = Object.fromEntries(
+        Object.entries(res).filter(([key]) => key.startsWith('group'))
+      );
+      return groupObjects;
+    } catch (e) {
+      console.log('error', e);
+      return {};
+    }
   }
 
   async getGroup(name: string) {

@@ -32,24 +32,25 @@ export class GroupController {
   }
 
   @Get('/list')
-  async getGroups(@Body() address: string): Promise<group[]> {
+  async getGroups(@Body() address: string): Promise<group[]|{}> {
+    console.log('address', address);
     const res = await this.group.getGroups(address);
     if (res === undefined) {
-      throw new HttpException('Error fetching groups', HttpStatus.INTERNAL_SERVER_ERROR)
+      return {};
     }
-
+    console.log('res', res);
     return res as group[];
   }
 
   @Get(':name')
-  async getGroup(@Param('name') groupName: string): Promise<group> {
+  async getGroup(@Param('name') groupName: string): Promise<group|{}> {
     if (!groupName) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
 
     const res = await this.group.getGroup(groupName);
     if (res === undefined) {
-      throw new HttpException('Error fetching group', HttpStatus.INTERNAL_SERVER_ERROR);
+      return {};
     }
 
     return res;
